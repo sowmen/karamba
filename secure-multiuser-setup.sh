@@ -14,8 +14,8 @@ YELLOW='\033[1;33m'
 NC='\033[0m'
 
 ADMIN_USER="sysadmin"
-SSH_PORT=2222
-MAX_AUTH_TRIES=3
+SSH_PORT=22
+MAX_AUTH_TRIES=5
 LOGIN_GRACE_TIME=30
 
 log() {
@@ -55,7 +55,8 @@ apt-get install -y \
     rkhunter \
     lynis \
     rsyslog \
-    logwatch
+    logwatch \
+    tmux
 
 ################################################################################
 # 2. Create Admin User
@@ -180,7 +181,7 @@ cat > /etc/fail2ban/jail.local << EOF
 [DEFAULT]
 bantime = 3600
 findtime = 600
-maxretry = 3
+maxretry = $MAX_AUTH_TRIES
 destemail = root@localhost
 sendername = Fail2Ban
 action = %(action_mwl)s
@@ -190,7 +191,7 @@ enabled = true
 port = $SSH_PORT
 filter = sshd
 logpath = /var/log/auth.log
-maxretry = 3
+maxretry = $MAX_AUTH_TRIES
 bantime = 7200
 EOF
 
